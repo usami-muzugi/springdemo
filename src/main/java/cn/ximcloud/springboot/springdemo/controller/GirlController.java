@@ -1,8 +1,13 @@
 package cn.ximcloud.springboot.springdemo.controller;
 
+import cn.ximcloud.springboot.springdemo.aspect.HttpAspect;
+import cn.ximcloud.springboot.springdemo.domain.Result;
 import cn.ximcloud.springboot.springdemo.repository.GirlRepository;
 import cn.ximcloud.springboot.springdemo.domain.Girl;
 import cn.ximcloud.springboot.springdemo.service.GirlService;
+import cn.ximcloud.springboot.springdemo.utils.ResultUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -18,12 +23,15 @@ public class GirlController {
     @Autowired
     private GirlService girlService;
 
+    private final static Logger logger = LoggerFactory.getLogger(GirlController.class);
+
     //获取数据库的数据
     /*
      * 查询数据库列表
      * */
-    @GetMapping(value = "/girls")
+    @GetMapping(value = "/girl")
     public List<Girl> girlList() {
+        logger.info("girlListInfo");
         return girlRepository.findAll();
     }
 
@@ -33,14 +41,13 @@ public class GirlController {
      * @return
      */
     @PostMapping(value = "/girls")
-    public Girl girladd(@Valid Girl girl, BindingResult bindingResult) {
+    public Result<Girl> girladd(@Valid Girl girl, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            System.out.println(bindingResult.getFieldError().getDefaultMessage());
-            return null;
+            return ResultUtil.error(1,bindingResult.getFieldError().getDefaultMessage());
         }
 
         //    <S extends T> S save(S var1);
-        return girlRepository.save(girl);
+        return ResultUtil.success(girlRepository.save(girl));
     }
 
     //查询一个女生
@@ -75,6 +82,11 @@ public class GirlController {
     @PostMapping(value = "/girl/two")
     public void girlInsertTwo() {
         girlService.insertTwo();
+    }
+
+    @PostMapping(value = "/girl/age/{age}")
+    public void getAge(@PathVariable("age") Integer age) throws Exception {
+        girlService.getAge(age);
     }
 
 }
