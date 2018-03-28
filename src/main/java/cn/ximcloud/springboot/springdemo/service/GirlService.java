@@ -36,4 +36,8 @@ public class GirlService {
             throw new Exception("还在上中学吧！");
         }
     }
+
+    public Girl findOneGril(Integer id) {
+        return girlRepository.findById(id).get();
+    }
 }
